@@ -1,0 +1,2 @@
+Amplifier: http://10.42.0.142
+Guitar Strap: http://10.42.0.14
