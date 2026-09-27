@@ -1,0 +1,14 @@
+[Unit]
+Description=Connected Devices HTML Server
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/justin/device_list_server.py 8080
+Restart=on-failure
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
