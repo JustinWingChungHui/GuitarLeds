@@ -13,19 +13,16 @@ sudo apt update
 
 sudo apt autoremove
 
-# Install and enable dhcpcd for automatic IP assigment upon boot/(re-)connection
-# sudo apt install dhcpcd5 && sudo systemctl enable --now dhcpcd
-
 # Setup Python and dependencies
 sudo apt install build-essential git python3 python3-dev python-is-python3 python3-requests python3-setuptools
 
-# System files
+# System files for the B-Pi M2 Zero
 git clone https://github.com/CTXz/bpi-m2z-system-files.git
 cd bpi-m2z-system-files
 chmod +x install.sh
 sudo ./install.sh
-
 cd ..
+
 # Setup wiringPi
 git clone https://github.com/bontango/BPI-WiringPi2
 cd BPI-WiringPi2
@@ -47,7 +44,6 @@ cd RPi.GPIO
 sudo CFLAGS="-fcommon -Wno-error=implicit-function-declaration" python3 setup.py install
 
 
-
 # Set up Access Point
 sudo apt install dnsmasq-base
 sudo apt-get install network-manager
@@ -66,6 +62,7 @@ sudo netplan apply
 sudo systemctl disable --now systemd-networkd
 
 # reboot the system to apply changes
+sudo reboot
 
 sudo nmcli connection add type wifi ifname wlan0 con-name Hotspot ssid "MyAP" 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
 
@@ -78,7 +75,7 @@ sudo nmcli connection up Hotspot
 
 # Disable other saved wifi coonections
 nmcli connection show
-sudo nmcli connection modify "OtherProfileName" connection.autoconnect no
+sudo nmcli connection modify "OtherProfileNames" connection.autoconnect no
 
 
 # Reboot
