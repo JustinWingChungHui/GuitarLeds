@@ -40,13 +40,18 @@ You get the option of:
  - RGBWW (RGB Warm White)
  - RGBNW (RGB Neutral White)
 
-What you see in the picture is neutral white.  I would avoid warm white as  this is normally for home lighting which needs to have more subtle tones. 
+What you see in the demo video is neutral white.  I would avoid warm white as  this is normally for home lighting which needs to have more subtle tones. 
 
 There are 5v, 12v and 24v variations.  I found 12v is bright and its fairly easy to get portable 12v battery packs.
 
 144 LEDs per metre is currently the most number of LEDs that was available.  The strips are available in 30 and 60 LEDs per metre, and they look very disappointing compared to 144.
 
-IP67 is a standard for water resistance.  In reality, you will not be submerging your guitar and amp in water.  But the IP67 light strip came in a transparent sleeve which made it easy to sow onto the guitar strap with fishing line, and so I would recommend getting this.
+![LED roll](docs/led_strip.jpg)
+
+IP67 is a standard for water resistance.  In reality, you will not be submerging your guitar and amp in water.  But the IP67 light strip came in a transparent sleeve which made it easier to sow onto the guitar strap with fishing line, and gives it some extra protection, and so I would recommend getting this.
+
+![LEDs on guitar strap](docs/guitar_strap1.jpg)
+
 
 WLED Controller
 ---------------
@@ -61,6 +66,8 @@ But the beauty of open source, is that any WLED compatible 12v controller will w
 WLED controllers can sync with each other on the same wifi network and they have an open REST API, both of which are used by this set up.
 
 Note I found that loud **rock🤘** music was generally too loud & noisy for the built in microphone to do anything useful with the lights.  So I mostly used sequences that weren't sound activated.  So you might decide to go for a controller without a microphone.
+
+![WLED on strap](docs/guitar_strap2.jpg)
 
 12v Power Supply
 ----------------
