@@ -158,9 +158,10 @@ cd RPi.GPIO
 sudo CFLAGS="-fcommon -Wno-error=implicit-function-declaration" python3 setup.py install
 ```
 
-WiFi Access Point Setup
------------------------
-The B-Pi does not have `network manager` running by default
+Switching Control Over to Network Manager
+-----------------------------------------
+
+The B-Pi does not have `network manager` running by default.  We need to set it up and hand over the management from `networkd`
 
 Install network manager and dns masq
 ```bash
@@ -168,7 +169,7 @@ sudo apt install dnsmasq-base
 sudo apt-get install network-manager
 ```
 
-We then need to hand over the management of wlan0 (the WiFi connection) to **network manager** from **networkd**.  
+We then need to hand over the management of wlan0 (the WiFi connection)
 
 Edit `/etc/NetworkManager/NetworkManager.conf` 
 ```bash
@@ -203,6 +204,10 @@ sudo reboot
 
 Check that the B-Pi is still connected to you WiFi.
 
+
+Set Up the WiFi Access Point
+----------------------------
+
 Now we can set up the access point called `MyAP` with password `MyPassword`
 ```bash
 sudo nmcli connection add type wifi ifname wlan0 con-name Hotspot ssid "MyAP" 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
@@ -230,3 +235,161 @@ Reboot the system and check the AP is still up and running
 ```bash
 sudo reboot
 ```
+
+Now connect your WLED controllers to the AP.
+
+We now need to make the IP addresses of the WLED controllers static, so they don't change when we reboot the B-Pi.
+
+Find the MAC and IP address of the WLED controller and make a note of them.
+```bash
+sudo cat /var/lib/NetworkManager/dnsmasq-wlan0.leases
+```
+
+Fix IP address of WLED controllers
+```bash
+sudo mkdir -p /etc/NetworkManager/dnsmasq-shared.d
+sudo nano /etc/NetworkManager/dnsmasq-shared.d/reservations.conf
+```
+
+Add the MAC address and IP addresses of both WLED controllers to the file and save
+```
+dhcp-host=d4:e9:f4:fa:7e:08,10.42.0.142
+dhcp-host=1c:c3:ab:bf:34:e4,10.42.0.13
+```
+
+Create Python Script to Monitor Button Presses and Send WLED Requests
+---------------------------------------------------------------------
+Lets now create a Python script to send a HTTP request to change light preset when a GPIO pin detects a switch being pressed.
+
+```bash
+nano monitor_pin.py
+```
+
+Python script
+```python
+import RPi.GPIO as GPIO
+import time
+import requests
+
+BUTTON_PIN = 11  # physical pin number (BOARD numbering)
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# The fixed IP address of one of the WLED controllers
+WLED_IP="10.42.0.142"
+
+# Set up a playlists of 'loud' lighting presets when the guitar pedal is on
+# and a playlist of 'quiet' lights presets when the guitar pedal is off
+LOUD_PLAYLIST_ID = 26
+QUIET_PLAYLIST_ID = 25
+
+
+def set_playlist(playlist_id: int):
+    """Tell WLED to start the given playlist id."""
+    try:
+        # Switch playlist
+        requests.post(
+            f"http://{WLED_IP}/json/state",
+            json={"ps": playlist_id}
+        )
+
+        # Next Preset
+        requests.post(
+            f"http://{WLED_IP}/json/state",
+            json={"np": True}
+        )
+
+    except requests.RequestException as exc:
+        print("Failed to set WLED playlist %s: %s", playlist_id, exc)
+
+
+# Locally tracked toggle state
+state = {"next": LOUD_PLAYLIST_ID}
+
+def on_press():
+    playlist_to_set = state["next"]
+
+    set_playlist(playlist_to_set)
+    
+    # flip which one we'll set next time, regardless of success/failure
+    state["next"] = LOUD_PLAYLIST_ID if playlist_to_set == QUIET_PLAYLIST_ID else QUIET_PLAYLIST_ID
+
+print("Waiting for button press (Ctrl+Z to exit)...")
+try:
+    while True:
+        # Falling edge = button pressed (pin pulled to GND)
+        GPIO.wait_for_edge(BUTTON_PIN, GPIO.FALLING, bouncetime=300)
+        print("Button pressed!")
+        on_press()
+
+except KeyboardInterrupt:
+    pass
+finally:
+    GPIO.cleanup()
+```
+
+Save and exit
+
+Check the script works by running
+```bash
+python monitor.py
+```
+ and bridging the below pins using a wire.
+ ![GPIO Pins](docs/bananapi_gpio.jpeg)
+
+If it is all working, we should make the script run on boot.
+
+Create a service
+```bash
+sudo nano /etc/systemd/system/wled-button.service
+```
+
+```
+# [Unit]
+# Description=WLED Playlist Button Listener
+# After=network.target
+
+# [Service]
+# ExecStart=/usr/bin/python3 /home/justin/monitor_pin.py
+# Restart=always
+# User=root
+
+# [Install]
+# WantedBy=multi-user.target
+```
+Save and close
+
+
+Double-check the path to python3
+```bash
+which python3
+```
+
+If it's not /usr/bin/python3, update ExecStart to match.
+
+Enable the new service to run oon boot
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable wled-button.service
+sudo systemctl start wled-button.service
+```
+
+
+Verify it's running
+```bash
+sudo systemctl status wled-button.service
+```
+
+To stop the service if needed
+```bash
+sudo systemctl stop wled-button.service
+```
+
+Reboot the B-Pi and check it works!
+
+Lever Switch
+------------
+After soldering wires on the lever switch to the B-Pi.  I bent the lever and positioned it so that a pedal topper would trigger it when pressed.
+
+![Lever Switch Positioning](docs/lever_switch_position.jpg)

@@ -6,8 +6,8 @@ read from the NetworkManager-managed dnsmasq lease file.
 Usage:
     sudo python3 device_list_server.py [port]
 
-Default port: 8080
-Page will be available at: http://10.42.0.1:8080/
+Default port: 80
+Page will be available at: http://10.42.0.1:80/
 """
 
 import sys
@@ -19,7 +19,7 @@ LEASE_FILE = "/var/lib/NetworkManager/dnsmasq-wlan0.leases"
 # Older/other setups sometimes use this path instead:
 FALLBACK_LEASE_FILE = "/var/lib/misc/dnsmasq.leases"
 
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 80
 
 
 def read_leases():
