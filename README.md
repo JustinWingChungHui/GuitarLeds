@@ -64,12 +64,13 @@ Note I found that loud **rock🤘** music was generally too loud & noisy for the
 
 12v Power Supply
 ----------------
-Standard barrel jack power supply.  It needs to supply at least 5A depending on the size of you amplifier and hence the number of LEDS its powering.
+Standard barrel jack power supply to run the LEDs on the guitar amplifier.  It needs to supply at least 5A depending on the size of you amplifier and hence the number of LEDS its powering.
 
 My amlifier had 220 LEDS, so 5A would be fine, I still opted for something that could supply 10A.  I might add even more LEDs in the future.
 
 Battery
 -------
+Required to power the guitar strap LEDs.
 ![Batteries](docs/batteries.jpg)
 
 I picked these two up off AliExpress and Amazon.
@@ -109,9 +110,9 @@ Before installing, open the SD card and edit
 Put # in front of **g_serial** in the first line to comment it out and save.
 This will allow a USB keyboard to work.  
 
-You'll need a computer that can read ext4 formatted data to do this.  Linux should do this without any issue. If you are using Windows, there is a way to do this using [WSL](https://learn.microsoft.com/en-us/windows/wsl/wsl2-mount-disk).  If you are on a Mac, good luck ! 😉
+You'll need a computer that can read ext4 formatted data to do this.  Linux should do this without any issue. If you are using Windows, there is a way to do this using [WSL](https://learn.microsoft.com/en-us/windows/wsl/wsl2-mount-disk).  If you are on a Mac, good luck! 😉
 
-Install the card into the B-Pi and follow the onscreen instructions to get connected to you local WiFi network.
+Install the card into the B-Pi and follow the on-screen instructions to get connected to you local WiFi network.
 
 
 Run updates
@@ -337,7 +338,7 @@ Save and exit
 
 Check the script works by running
 ```bash
-python monitor.py
+python monitor_pin.py
 ```
  and bridging the below pins using a wire.
  ![GPIO Pins](docs/bananapi_gpio.jpeg)
@@ -372,7 +373,7 @@ which python3
 
 If it's not /usr/bin/python3, update ExecStart to match.
 
-Enable the new service to run oon boot
+Enable the new service to run on boot
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable wled-button.service
