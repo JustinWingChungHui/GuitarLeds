@@ -1,6 +1,6 @@
 WLED Guitar strap and Amplifier
 ===============================
-![demo](docs/demo.gif)
+
 
 Synced LED guitar strap and amplifier with changes triggered by pressing a guitar FX pedal.
 
