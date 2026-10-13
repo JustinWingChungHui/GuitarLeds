@@ -15,16 +15,14 @@ A BananaPi M2 Zero is providing a WiFi network by running in AP mode.  Two WLED 
 
 The lever switch is connected to the BPi pins which trigger HTTP requests to one of the WLED controllers.
 
-The WLED controllers can natively sync with each other.
+The WLED controllers can natively sync with each other over the same WiFi network.
 
 LED Strips
 ----------
 
 The main requirement here was for everything to be **AS OBNOXIOUSLY BRIGHT AS POSSIBLE!!! 🤘🤘🤘🤘** 
 
-In guitar world it is universally known that
-
-**Louder = Gooder** so by that logic **Brighter = Gooder**
+**Brighter = Louder = Gooder**
 
 As such the specs for the LED strip are:
  - SK6812
@@ -56,7 +54,7 @@ IP67 is a standard for water resistance.  In reality, you will not be submerging
 WLED Controller
 ---------------
 
-[WLED](https://github.com/wled/WLED) is an open source firmware for ESP32 microcontrollers to control addressable LEDs.  Open source means no vendor tie in.  There are a lot of LED controllers on the market that have apps to control the lighting.  Unfortunately as a lot of them are not open source, it menas that if a vendor pulls their app or goes out of business, you have an LED which you can't control.
+[WLED](https://github.com/wled/WLED) is an open source firmware for ESP32 microcontrollers to control addressable LEDs.  Open source means no vendor tie in.  There are a lot of LED controllers on the market that have their own apps to control the lighting.  And when a vendor pulls their app or goes out of business, you have an LED which you can't control.
 
 I went for a Gledopto ESP32 controller with built in microphone and 12v barrel jack input
 ![Gledopto](docs/gledopto.png)
@@ -73,7 +71,7 @@ Note I found that loud **rock🤘** music was generally too loud & noisy for the
 ----------------
 Standard barrel jack power supply to run the LEDs on the guitar amplifier.  It needs to supply at least 5A depending on the size of you amplifier and hence the number of LEDS its powering.
 
-My amlifier had 220 LEDS, so 5A would be fine, I still opted for something that could supply 10A.  I might add even more LEDs in the future.
+My amplifier had 220 LEDS, so 5A would be fine, I still opted for something that could supply 10A.  I might add even more LEDs in the future.
 
 Battery
 -------
@@ -263,7 +261,7 @@ sudo mkdir -p /etc/NetworkManager/dnsmasq-shared.d
 sudo nano /etc/NetworkManager/dnsmasq-shared.d/reservations.conf
 ```
 
-Add the MAC address and IP addresses of both WLED controllers to the file and save
+Add the MAC address and IP addresses of both WLED controllers to the file in the format below and save
 ```
 dhcp-host=d4:e9:f4:fa:7e:08,10.42.0.142
 dhcp-host=1c:c3:ab:bf:34:e4,10.42.0.13
@@ -347,7 +345,7 @@ Check the script works by running
 ```bash
 python monitor_pin.py
 ```
- and bridging the below pins using a wire.
+ and bridge the below pins using a wire to simulate a button press.
  ![GPIO Pins](docs/bananapi_gpio.jpeg)
 
 If it is all working, we should make the script run on boot.
@@ -358,17 +356,17 @@ sudo nano /etc/systemd/system/wled-button.service
 ```
 
 ```
-# [Unit]
-# Description=WLED Playlist Button Listener
-# After=network.target
+[Unit]
+Description=WLED Playlist Button Listener
+After=network.target
 
-# [Service]
-# ExecStart=/usr/bin/python3 /home/justin/monitor_pin.py
-# Restart=always
-# User=root
+[Service]
+ExecStart=/usr/bin/python3 /home/justin/monitor_pin.py
+Restart=always
+User=root
 
-# [Install]
-# WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 ```
 Save and close
 
