@@ -261,10 +261,10 @@ sudo mkdir -p /etc/NetworkManager/dnsmasq-shared.d
 sudo nano /etc/NetworkManager/dnsmasq-shared.d/reservations.conf
 ```
 
-Add the MAC address and IP addresses of both WLED controllers to the file in the format below and save
+Add the MAC address and IP addresses of both WLED controllers to the file in the format below and save. The **infinite** is the DHCP lease time
 ```
-dhcp-host=d4:e9:f4:fa:7e:08,10.42.0.142
-dhcp-host=1c:c3:ab:bf:34:e4,10.42.0.13
+dhcp-host=d4:e9:f4:fa:7e:08,10.42.0.142,infinite
+dhcp-host=1c:c3:ab:bf:34:e4,10.42.0.13,infinite
 ```
 
 Create Python Script to Monitor Button Presses and Send WLED Requests
@@ -397,6 +397,11 @@ sudo systemctl stop wled-button.service
 ```
 
 Reboot the B-Pi and check it works!
+
+If you need to check the logs
+```bash
+sudo journalctl -u wled-button.service
+```
 
 Lever Switch
 ------------

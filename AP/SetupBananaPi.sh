@@ -121,3 +121,6 @@ sudo systemctl status wled-button.service
 
 # stop the service if needed
 sudo systemctl stop wled-button.service
+
+# Check logs
+sudo journalctl -u wled-button.service
